@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="QQ × 抖音桥 / QQ × Douyin Bridge">
+  <defs>
+    <linearGradient id="qqdy-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7faff"/>
+      <stop offset="1" stop-color="#eaf1fb"/>
+    </linearGradient>
+    <linearGradient id="qqdy-deck" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#12b7f5"/>
+      <stop offset="1" stop-color="#fe2c55"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="1" y="1" width="62" height="62" rx="14" fill="url(#qqdy-bg)" stroke="#c9d9ee" stroke-width="2"/>
+
+  <!-- 左边：QQ 气泡 -->
+  <g>
+    <path d="M9 25.5c0-2.2 1.8-4 4-4h13.5c2.2 0 4 1.8 4 4v10c0 2.2-1.8 4-4 4H17l-4.6 4v-4H13c-2.2 0-4-1.8-4-4z" fill="#12b7f5"/>
+    <circle cx="15.6" cy="30.6" r="1.7" fill="#fff"/>
+    <circle cx="20.2" cy="30.6" r="1.7" fill="#fff"/>
+    <circle cx="24.8" cy="30.6" r="1.7" fill="#fff"/>
+  </g>
+
+  <!-- 右边：抖音气泡（黑底 + 红/青错位音符，借它的品牌配色，不复制官方标识） -->
+  <g>
+    <path d="M55 25.5c0-2.2-1.8-4-4-4H37.5c-2.2 0-4 1.8-4 4v10c0 2.2 1.8 4 4 4H47l4.6 4v-4H51c2.2 0 4-1.8 4-4z" fill="#161823"/>
+    <path d="M43.6 22.9v8.4a3.2 3.2 0 1 1-1.5-2.72v-4.4l4.9-1.35v4.02a3.2 3.2 0 1 1-1.5-2.72v-2.2z" fill="#25f4ee" opacity=".9"/>
+    <path d="M44.6 21.8v8.4a3.2 3.2 0 1 1-1.5-2.72v-4.4l4.9-1.35v4.02a3.2 3.2 0 1 1-1.5-2.72v-2.2z" fill="#fe2c55" opacity=".9"/>
+    <path d="M44.1 22.35v8.4a3.2 3.2 0 1 1-1.5-2.72v-4.4l4.9-1.35v4.02a3.2 3.2 0 1 1-1.5-2.72v-2.2z" fill="#fff"/>
+  </g>
+
+  <!-- 中间：一条双向桥（拱 + 桥面 + 两端箭头） -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 45.5c0-7.6 7.6-12.5 17-12.5s17 4.9 17 12.5" stroke="url(#qqdy-deck)" stroke-width="2.6"/>
+    <path d="M11.5 45.5h41" stroke="#33415c" stroke-width="2.6"/>
+    <path d="M11.5 45.5v4.2M52.5 45.5v4.2" stroke="#33415c" stroke-width="2.2"/>
+    <path d="M20 41.4h24" stroke="#8ea3c4" stroke-width="2.2" stroke-dasharray="3 4"/>
+  </g>
+
+  <g fill="#33415c">
+    <path d="M19.6 45.5l4.4-2.6v5.2z" transform="rotate(180 21.8 45.5)"/>
+    <path d="M44.4 45.5l-4.4-2.6v5.2z" transform="rotate(180 42.2 45.5)"/>
+  </g>
+</svg>

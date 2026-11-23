@@ -1,0 +1,20 @@
+{
+  "name": "qq-agent-presets",
+  "version": "0.2.1-r1",
+  "description": "qq-bridge 的 DSH 端 bundle（2026-11-23 起合并原 qq-mode-console）：① 把 qq-chat / qq-chat-v2 作为 @deepseek-ai/dsh-agent-preset 行插入（DSH 0.1.7+ 的 preset 机制）；② 携带两个 preset 共用的 qq-tool-restrict 安全守卫；③ 提供 qq-mode 设置命名空间（模式控制台，桥接通过 DSH settings API 读写模式）",
+  "type": "module",
+  "main": "./lib/index.js",
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": [
+        "./qq-mode.patch.yml",
+        "./presets/qq-chat.patch.yml",
+        "./presets/qq-chat-v2.patch.yml"
+      ]
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.1"
+  }
+}

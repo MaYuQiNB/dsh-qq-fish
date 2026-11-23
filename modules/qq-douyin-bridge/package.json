@@ -1,0 +1,37 @@
+{
+  "name": "dsh-qq-douyin-bridge",
+  "version": "0.2.0",
+  "description": "QQ × 抖音桥：把一个 QQ 会话和一位抖音好友的私信接成一条双向通道——抖音发来的私信转到 QQ，你在 QQ 里回的话自动发回抖音。",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "lib",
+    "locale/*.json",
+    "icon.svg",
+    "CONTRACT.md",
+    "README.md",
+    "selfcheck.mjs"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "name": "dsh-qq-fish",
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "qq-bridge",
+      "path": "modules/qq-bridge",
+      "title": "QQ ↔ DSH 桥接核心",
+      "standalone": true,
+      "requires": [
+        "node>=20",
+        "snowluma",
+        "dsh"
+      ]
+    },
+    {
+      "id": "qq-douyin-bridge",
+      "path": "modules/qq-douyin-bridge",
+      "title": "QQ × 抖音互通插件",
+      "standalone": true,
+      "requires": [
+        "dsh",
+        "douyin-login"
+      ]
+    },
+    {
+      "id": "webcall",
+      "path": "modules/webcall",
+      "title": "浏览器视频通话网页",
+      "standalone": true,
+      "requires": [
+        "node>=18",
+        "python",
+        "faster-whisper",
+        "ffmpeg"
+      ]
+    },
+    {
+      "id": "qwen-coder",
+      "path": "modules/qwen-coder",
+      "title": "千问编程工人",
+      "standalone": true,
+      "requires": [
+        "node>=18",
+        "qwen-api-key"
+      ]
+    },
+    {
+      "id": "persona",
+      "path": "modules/persona",
+      "title": "DSH 预设与角色卡",
+      "standalone": false,
+      "requires": [
+        "dsh",
+        "qq-bridge"
+      ]
+    },
+    {
+      "id": "ops",
+      "path": "modules/ops",
+      "title": "Windows 运维脚本",
+      "standalone": false,
+      "requires": [
+        "windows",
+        "powershell"
+      ]
+    }
+  ]
+}

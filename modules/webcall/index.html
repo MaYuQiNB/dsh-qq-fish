@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DeepSeek · 视频通话</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #06070d; color: #eaf2ff; font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; overflow: hidden; }
+  #app { display: flex; flex-direction: column; height: 100%; }
+  #stage { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 16px 16px 8px; min-height: 0; }
+  .pane { position: relative; border-radius: 22px; overflow: hidden; background: #0b1020; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+  .pane .label { position: absolute; left: 14px; top: 12px; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; background: rgba(8,14,28,.55); backdrop-filter: blur(8px); font-size: 15px; letter-spacing: .5px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 10px #4ade80; }
+  .dot.warn { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+  .dot.off { background: #64748b; box-shadow: none; }
+  #myVideo { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; background: #0b1020; }
+  #sceneFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  #petWrap { position: absolute; right: 5%; bottom: 4%; height: 56%; pointer-events: none; filter: drop-shadow(0 14px 28px rgba(0,0,0,.45)); animation: bob 4.6s ease-in-out infinite; }
+  #petWrap video { height: 100%; width: auto; display: block; }
+  #petWrap.speaking { animation: bob 1.1s ease-in-out infinite; filter: drop-shadow(0 0 26px rgba(120,200,255,.75)); }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  #subtitle { position: absolute; left: 4%; right: 4%; bottom: 4%; z-index: 6; min-height: 30px; padding: 6px 10px; border-radius: 12px; background: rgba(6,10,22,.4); font-size: 17px; line-height: 1.5; white-space: pre-wrap; text-align: center; opacity: 0; transition: opacity .2s; }
+  #subtitle.show { opacity: 1; }
+  #subtitle .who { color: #8ecbff; margin-right: 6px; font-size: 14px; }
+  #controls { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 10px 16px 18px; flex-wrap: wrap; }
+  button { border: 0; cursor: pointer; font-family: inherit; border-radius: 999px; font-size: 16px; transition: transform .1s, filter .2s; }
+  button:active { transform: scale(.97); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .ctrl { width: 58px; height: 58px; border-radius: 50%; background: #1c2740; color: #dbeafe; font-size: 22px; display: grid; place-items: center; }
+  .ctrl.on { background: #2563eb; }
+  .ctrl.hangup { background: #dc2626; }
+  #talkBtn { min-width: 190px; height: 58px; padding: 0 26px; background: linear-gradient(135deg,#3b82f6,#22d3ee); color: #04121f; font-weight: 700; font-size: 18px; letter-spacing: 1px; touch-action: none; -webkit-user-select: none; user-select: none; }
+  body { overscroll-behavior: none; }
+  #talkBtn.recording { background: linear-gradient(135deg,#f43f5e,#f59e0b); color: #1b0600; }
+  #talkBtn:disabled { background: #263349; color: #7c8aa5; }
+  #status { position: fixed; left: 50%; top: 12px; transform: translateX(-50%); z-index: 20; padding: 6px 14px; border-radius: 999px; background: rgba(8,14,28,.7); font-size: 14px; color: #a8c6f0; opacity: 0; transition: opacity .3s; pointer-events: none; }
+  #status.show { opacity: 1; }
+  #timer { position: absolute; right: 14px; top: 12px; z-index: 5; padding: 6px 12px; border-radius: 999px; background: rgba(8,14,28,.55); font-variant-numeric: tabular-nums; font-size: 15px; }
+  .hint { font-size: 13px; color: #7e90ad; }
+  @media (max-width: 900px) { #stage { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <div class="pane">
+      <div class="label"><span class="dot" id="myDot"></span>我</div>
+      <video id="myVideo" autoplay playsinline muted></video>
+      <div id="subtitle"><span class="who" id="who1"></span><span id="what1"></span></div>
+    </div>
+    <div class="pane" id="aiPane">
+      <div class="label"><span class="dot" id="aiDot"></span>DeepSeek</div>
+      <iframe id="sceneFrame" src="/wall/fish_bedroom_interactive.html" title="scene"></iframe>
+      <div id="petWrap"><video id="petVideo" src="/pet.webm" autoplay loop muted playsinline></video></div>
+      <div id="subtitle2" style="position:absolute;left:4%;right:4%;bottom:4%;z-index:6;min-height:30px;padding:6px 10px;border-radius:12px;background:rgba(6,10,22,.4);font-size:17px;line-height:1.5;white-space:pre-wrap;text-align:center;opacity:0;transition:opacity .2s;"><span class="who" id="who2"></span><span id="what2"></span></div>
+      <div id="timer">--:--</div>
+    </div>
+  </div>
+  <div id="controls">
+    <button class="ctrl" id="camBtn" title="摄像头开关">📷</button>
+    <button class="ctrl" id="engineBtn" title="切换 AI 引擎：DeepSeek / 千问">🐋</button>
+    <button id="talkBtn" disabled>按住说话</button>
+    <button class="ctrl" id="autoBtn" title="自动播放 AI 语音（默认开）">🔊</button>
+    <button class="ctrl hangup" id="hangupBtn" title="挂断">📵</button>
+  </div>
+</div>
+<div id="status"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const myVideo = $('myVideo'), petVideo = $('petVideo'), petWrap = $('petWrap');
+const myDot = $('myDot'), aiDot = $('aiDot'), talkBtn = $('talkBtn'), camBtn = $('camBtn'), autoBtn = $('autoBtn'), hangupBtn = $('hangupBtn'), engineBtn = $('engineBtn');
+const timerEl = $('timer'), statusEl = $('status');
+const sub1 = { box: $('subtitle'), who: $('who1'), what: $('what1') };
+const sub2 = { box: $('subtitle2'), who: $('who2'), what: $('what2') };
+
+let stream = null, micStream = null, recorder = null, chunks = [];
+let inCall = false, autoSpeak = true, busy = false, mutedCam = false;
+let engine = 'deepseek'; // 'deepseek' | 'qwen'
+let timerStart = 0, timerId = null;
+let audioCtx = null, audioEl = null;
+
+function status(text, ms = 2600) {
+  statusEl.textContent = text; statusEl.classList.add('show');
+  clearTimeout(statusEl._t); statusEl._t = setTimeout(() => statusEl.classList.remove('show'), ms);
+}
+function setDots() {
+  myDot.className = 'dot' + (inCall ? '' : ' off');
+  aiDot.className = 'dot' + (inCall ? '' : ' off');
+}
+function startTimer() {
+  timerStart = Date.now(); clearInterval(timerId);
+  timerId = setInterval(() => {
+    const s = Math.floor((Date.now() - timerStart) / 1000);
+    timerEl.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  }, 500);
+}
+function showSub(which, who, text, ms = 4500) {
+  const s = which === 1 ? sub1 : sub2;
+  s.who.textContent = who || ''; s.what.textContent = text || '';
+  s.box.classList.add('show');
+  clearTimeout(s.box._t); s.box._t = setTimeout(() => s.box.classList.remove('show'), ms);
+}
+
+async function getMedia() {
+  stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+  myVideo.srcObject = stream;
+  try { micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false }); }
+  catch (e) { micStream = null; status('麦克风不可用：' + e.message); }
+}
+
+async function startCall() {
+  if (inCall) return;
+  // 手机上播放 AI 语音需要用户手势解锁 AudioContext，接通这一下正好
+  try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); await audioCtx.resume(); } catch {}
+  try { await getMedia(); } catch (e) { status('摄像头打不开：' + e.message, 5000); return; }
+  inCall = true; setDots(); startTimer();
+  talkBtn.disabled = false; talkBtn.textContent = '按住说话';
+  fetch('/api/call/start', { method: 'POST' }).catch(() => {});
+  status('已接通 · 按住按钮和我说话');
+}
+function stopMic() { if (micStream) { micStream.getTracks().forEach((t) => t.stop()); micStream = null; } }
+async function hangup() {
+  if (!inCall) return;
+  inCall = false; setDots(); talkBtn.disabled = true; talkBtn.textContent = '按住说话';
+  clearInterval(timerId); timerEl.textContent = '--:--';
+  stopMic(); if (stream) { stream.getTracks().forEach((t) => t.stop()); stream = null; if (myVideo) myVideo.srcObject = null; }
+  fetch('/api/call/end', { method: 'POST' }).catch(() => {});
+  status('通话已结束', 4000);
+}
+
+function startRecord() {
+  if (!inCall || busy || !micStream) return;
+  chunks = [];
+  // iPhone Safari 只支持 audio/mp4；Chrome/Edge 用 webm/opus。服务端 ffmpeg 两种都能转。
+  const candidates = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+  const supported = candidates.find((m) => { try { return MediaRecorder.isTypeSupported(m); } catch { return false; } });
+  try { recorder = supported ? new MediaRecorder(micStream, { mimeType: supported }) : new MediaRecorder(micStream); }
+  catch { recorder = new MediaRecorder(micStream); }
+  recorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = () => processTurn();
+  recorder.start();
+  talkBtn.classList.add('recording'); talkBtn.textContent = '松开发送…';
+}
+function stopRecord() {
+  if (!recorder) return;
+  try { recorder.stop(); } catch {}
+  recorder = null;
+  talkBtn.classList.remove('recording'); talkBtn.textContent = '按住说话';
+}
+async function processTurn() {
+  if (!chunks.length) return;
+  const blob = new Blob(chunks, { type: 'audio/webm' });
+  chunks = [];
+  busy = true; talkBtn.disabled = true; status('识别中…', 12000);
+  let text = '';
+  try {
+    const r = await fetch('/api/asr', { method: 'POST', body: blob, headers: { 'content-type': blob.type } });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || '识别失败');
+    text = (j.text || '').trim();
+    if (!text) { status('没听清，再说一次？'); return; }
+    showSub(1, '我', text);
+    status('思考中…', 20000);
+    const cr = await fetch('/api/chat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, engine }) });
+    const cj = await cr.json();
+    if (!cj.ok) throw new Error(cj.error || 'AI 回复失败');
+    const reply = (cj.reply || '').trim();
+    if (!reply) { status('AI 没有回复'); return; }
+    showSub(2, 'DeepSeek', reply, 6000);
+    if (autoSpeak) {
+      status('说话中…', 20000);
+      petWrap.classList.add('speaking');
+      try { await speak(reply); } finally { petWrap.classList.remove('speaking'); status('说得不错。继续按住说话', 2500); }
+    } else status('回复已显示（语音已关）', 3000);
+  } catch (e) {
+    status('出错：' + (e.message || e), 6000);
+  } finally {
+    busy = false; if (inCall) { talkBtn.disabled = false; }
+  }
+}
+async function speak(text) {
+  const r = await fetch('/api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, voice: 'breeze' }) });
+  if (!r.ok) throw new Error('TTS HTTP ' + r.status);
+  const buf = await r.arrayBuffer();
+  if (!audioCtx) audioCtx = new AudioContext();
+  const audio = await audioCtx.decodeAudioData(buf);
+  const src = audioCtx.createBufferSource();
+  src.buffer = audio; src.connect(audioCtx.destination); src.start();
+  await new Promise((resolve) => { src.onended = resolve; });
+}
+
+// 按住说话
+talkBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); if (!inCall || busy) return; startRecord(); });
+talkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); stopRecord(); });
+talkBtn.addEventListener('pointercancel', () => stopRecord());
+talkBtn.addEventListener('pointerleave', () => { if (recorder) stopRecord(); });
+window.addEventListener('keydown', (e) => { if (e.code === 'Space' && !e.repeat && inCall && !busy) { e.preventDefault(); startRecord(); } });
+window.addEventListener('keyup', (e) => { if (e.code === 'Space' && inCall) { e.preventDefault(); stopRecord(); } });
+
+camBtn.addEventListener('click', () => {
+  if (!inCall) { startCall(); return; }
+  mutedCam = !mutedCam;
+  if (stream) stream.getVideoTracks().forEach((t) => (t.enabled = !mutedCam));
+  camBtn.classList.toggle('on', !mutedCam);
+  status(mutedCam ? '摄像头已关' : '摄像头已开', 1500);
+});
+autoBtn.addEventListener('click', () => { autoSpeak = !autoSpeak; autoBtn.classList.toggle('on', autoSpeak); status(autoSpeak ? 'AI 语音：开' : 'AI 语音：关', 1500); });
+engineBtn.addEventListener('click', () => {
+  engine = engine === 'deepseek' ? 'qwen' : 'deepseek';
+  engineBtn.textContent = engine === 'deepseek' ? '🐋' : 'QW';
+  engineBtn.classList.toggle('on', engine === 'qwen');
+  status(engine === 'deepseek' ? 'AI 引擎：DeepSeek' : 'AI 引擎：千问（免费额度）', 2000);
+});
+hangupBtn.addEventListener('click', () => hangup());
+window.addEventListener('beforeunload', () => { try { fetch('/api/call/end', { method: 'POST', keepalive: true }); } catch {} });
+
+// 页面上来先显示“点击接通”
+autoBtn.classList.add('on');
+camBtn.classList.add('on');
+timerEl.textContent = '--:--';
+status('点击 📷 接通视频通话', 6000);
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+name: pack-modules
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip each module
+        run: |
+          mkdir -p dist
+          for d in modules/*/; do
+            name=$(basename "$d")
+            (cd modules && zip -r "../dist/${name}-${GITHUB_REF_NAME}.zip" "$name")
+          done
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip

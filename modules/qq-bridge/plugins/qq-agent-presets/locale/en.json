@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "QQ Chat Presets & Mode Console",
+    "description": "DSH-side plugin for the QQ bridge (merge of the former QQ Chat Presets and QQ Mode Console bundles): the qq-chat / qq-chat-v2 agent presets with a shared tool allow-list guard, plus the qq-mode settings namespace used to switch the bridge mode (chat, closed-agent, first- or second-generation simulation)."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "baseUrl": "https://maas.qianwenaiapi.com/compatible-mode/v1",
+  "apiKey": "REPLACE_ME",
+  "models": [
+    "qwen3.7-plus",
+    "qwen3.7-max",
+    "qwen4-max"
+  ]
+}
