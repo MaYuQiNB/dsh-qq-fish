@@ -23,7 +23,7 @@
 ### 方式 A：Sparse checkout（推荐，保留 git 更新能力）
 
 ```bash
-git clone --filter=blob:none --sparse https://github.com/MaYuQiNB/dsh-qq-fish.git
+git clone --filter=blob:none --sparse https://github.com/<owner>/dsh-qq-fish.git
 cd dsh-qq-fish
 # 只要 webcall 和 qwen-coder
 git sparse-checkout set modules/webcall modules/qwen-coder
@@ -52,7 +52,7 @@ GitHub 网页进入 `modules/<名字>/`，用第三方 download-directory 工具
 
 ```powershell
 # 1. 只取这个模块
-git clone --filter=blob:none --sparse https://github.com/MaYuQiNB/dsh-qq-fish.git
+git clone --filter=blob:none --sparse https://github.com/<owner>/dsh-qq-fish.git
 cd dsh-qq-fish
 git sparse-checkout set modules/webcall
 cd modules/webcall
@@ -78,6 +78,8 @@ node server.mjs
 - [docs/architecture.md](docs/architecture.md) — 组件、端口、数据流
 - [docs/security.md](docs/security.md) — 白名单、密钥、发布注意
 - 各模块目录下的 README
+
+- [CHANGELOG.md](CHANGELOG.md) — 版本变更记录
 
 ## License
 

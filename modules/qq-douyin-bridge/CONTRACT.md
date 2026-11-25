@@ -69,7 +69,7 @@ POST 请求 `Content-Type` 必须是 `application/json`，body 上限 256 KB。
   "lastError": "",
   "qqApiBase": "http://127.0.0.1:3000",       // 实际用到的（可能来自自动发现）
   "douyinApiBase": "http://127.0.0.1:54487/api/douyin-duty",
-  "storePath": "C:\Users\<YOU>\\.dsh\\qq-douyin-bridge\\state.json"
+  "storePath": "C:\\Users\\MYQ\\.dsh\\qq-douyin-bridge\\state.json"
 }
 ```
 
